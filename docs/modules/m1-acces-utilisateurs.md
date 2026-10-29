@@ -7,10 +7,10 @@
 | Projet | Eventia, application web de gestion des événements d'une agence événementielle |
 | Module | M1 - Accès et utilisateurs (premier module du socle, répertoire `app/Modules/Access/`) |
 | Sources | Cahier des charges v2.0 (F1, F2, RG17, US1, US2, T1, T2) ; Document d'architecture v2.0 (§4.2, §5.2.1, §7, §8.1, §12.2, ADR-001, ADR-002) |
-| Version du plan | 0.2 |
+| Version du plan | 0.3 |
 | Date | 22 octobre 2026 |
 | Auteur | Brichton |
-| Statut | **Brouillon à valider** (étape 0 en cours) |
+| Statut | **Brouillon à valider** (étape 0 à valider) |
 | Validateur | À renseigner (enseignant / référent de l'agence) |
 | Charge indicative | Environ 5 à 6 jours (le planning du cahier des charges prévoit 2 semaines pour tout le socle M1 à M4) |
 
@@ -57,7 +57,7 @@ Légende des statuts d'étape : à faire, en cours, bloquée, à valider, valid�
 | Élément | Source | État |
 |---|---|---|
 | PHP, framework Laravel | Cahier des charges §7, architecture §7.2 | Poste du développeur : PHP 8.4.23, Laravel framework 13.38.0 (squelette 13.11.0), confirmés par `php artisan --version` (Laravel Framework 13.38.0) le 22 oct. 2026 ; projet créé dans `C:\dev\eventia` |
-| MySQL | idem | Version **à confirmer** (Q1) ; les tests de concurrence et d'unicité tournent sur la vraie base MySQL, pas sur SQLite |
+| MySQL | idem | MySQL 8.4.13 (conteneur Docker `eventia-mysql`, port 3306, base `eventia`) ; les tests de concurrence et d'unicité tournent sur la vraie base MySQL, pas sur SQLite |
 | Rendu serveur Blade, sans application monopage | Architecture §7.2 | Retenu |
 | Authentification et sessions Laravel, hachage à coût ajustable, CSRF intégré | Architecture §7.2, §8.1 | Retenu : on réutilise le mécanisme du framework, on n'en construit pas un second |
 | Monolithe modulaire, un répertoire par module sous `app/Modules/` | ADR-001 | Retenu |
@@ -236,13 +236,18 @@ Une question qui touche les droits, les données ou une règle métier **bloque 
 - **Q3** : `journal.consulter` accordé à l'administrateur et au chargé d'événements (ADR-003).
 - **Q8** : R15 validée ; premier administrateur créé par commande artisan, mot de passe lu dans l'environnement (ADR-004).
 
+- **Matrice des droits §5.2** : validée.
+- **Q4** : mot de passe de 12 caractères minimum, liste de mots de passe courants refusée, aucune composition imposée.
+- **Q5** : 5 essais par couple identifiant/adresse, blocage de 1 à 15 minutes (durée doublée à chaque palier) ; session de 60 minutes d'inactivité, avertissement 2 minutes avant l'expiration.
+- **Q9** : code en français (tables, colonnes, classes du domaine) ; répertoire du module `Access` tel que dans le document d'architecture.
+
 Le journal des décisions est en fin de document.
 
 ---
 
 ## Étape 0 - Valider le cadrage et préparer le socle du projet
 
-**Statut :** en cours (bloquée sur la création du projet Laravel)
+**Statut :** à valider
 
 ### Objectif et prérequis
 
@@ -273,25 +278,30 @@ Le jeu sur papier doit couvrir au moins un cas nominal, un refus d'accès et un 
 
 ### Critères de sortie
 
-- [ ] Versions PHP, Laravel et MySQL inscrites au §4.
-- [ ] Q1, Q3 et Q8 tranchées ; les autres ont une décision ou une hypothèse datée.
-- [ ] Matrice des droits validée par le validateur.
-- [ ] Le projet démarre et un test vide s'exécute sur MySQL.
+- [x] Versions PHP, Laravel et MySQL inscrites au §4.
+- [x] Q1, Q3 et Q8 tranchées ; les autres ont une décision ou une hypothèse datée (Q4, Q5, Q9 tranchées ; autres : recommandation du §8 par défaut).
+- [x] Matrice des droits validée par le développeur (validation par l'enseignant ou le référent à confirmer).
+- [ ] Le projet démarre et un test vide s'exécute sur MySQL (migrations vérifiées sur MySQL ; `php artisan test` reste à lancer).
 
 ### Bilan d'exécution
 
-Statut : en cours, 22 oct. 2026.
+Statut : à valider, 29 oct. 2026.
 
 **Fait.**
-- Q1, Q3 et Q8 tranchées par le développeur (voir §8) ; ADR-003 et ADR-004 rédigés.
-- Dépôt Git initialisé sur la branche `develop` ; plan copié dans `docs/modules/`. Aucun commit n'a encore été fait.
-- Environnement relevé : PHP 8.3.6, Git 2.43, Docker 29.9, Node 22 ; MySQL non installé localement (prévu via Docker).
-- Jeu sur papier (voir ci-dessous).
+- Projet Laravel créé sur le poste du développeur (`C:\dev\eventia`) : Laravel Framework 13.38.0, PHP 8.4.23 (relevé par `php artisan --version` et `php -v`). Création impossible dans l'environnement de Claude (accès à `repo.packagist.org` bloqué) ; réussie après changement de dossier, `Documents` bloquant l'écriture des fichiers temporaires de Composer.
+- MySQL 8.4.13 lancé dans un conteneur Docker (`eventia-mysql`, port 3306, base `eventia`) ; `.env` configuré pour MySQL.
+- `php artisan migrate:fresh` exécuté avec succès sur MySQL : migrations `create_users_table`, `create_cache_table` et `create_jobs_table` en DONE (29 oct. 2026). La montée et le rejeu de migrations fonctionnent donc sur la vraie base cible.
+- Dépôt GitHub `BrichtonSilva/Silver-Coorp`, branche `develop` ; plan, ADR-003 et ADR-004 poussés (commits `9b55bb1` et `b204546`).
+- Questions tranchées : Q1, Q3, Q4, Q5, Q8, Q9 et la matrice des droits (§8). ADR-003 et ADR-004 rédigés.
+- Jeu sur papier (tableau ci-dessous) : aucun défaut de règle trouvé.
+- Environnement de travail relevé : Git, Docker 29.6.2, Docker Desktop 4.85.0.
 
 **Non fait, et pourquoi.**
-- **Projet Laravel** : refusé dans l'environnement de travail de Claude (accès à `repo.packagist.org` bloqué, 403), puis **créé avec succès sur le poste du développeur** (`C:\dev\eventia`, Laravel 13.38.0, PHP 8.4.23, migrations par défaut exécutées sur SQLite). Reste à vérifier MySQL et à pousser le dépôt. Ancien constat : la création a échoué ici, l'accès à Packagist est refusé par le proxy. Le blocage est une règle de l'environnement, il n'a pas été contourné. Conséquence : la version de Laravel n'est pas relevée, la structure `app/Modules/` et la branche `feature/m1-acces-utilisateurs` ne sont pas créées, et le critère « le projet démarre et un test vide s'exécute sur MySQL » n'est pas vérifié.
-- Q2, Q4 à Q7, Q9 à Q13 non tranchées (recommandations au §8). Seules Q1, Q3 et Q8 conditionnaient l'étape 0.
-- Matrice des droits : non encore validée par le validateur (§5.2, ligne journal alignée sur ADR-003).
+- Le critère « un test vide s'exécute sur MySQL » n'a pas été exécuté : seule la migration l'a été (`php artisan test` à lancer en début d'étape 1).
+- Branche `feature/m1-acces-utilisateurs` non créée : à créer depuis `develop` au début de l'étape 1.
+- Q2, Q6, Q7, Q10, Q11, Q12 et Q13 non tranchées explicitement : les recommandations du §8 s'appliquent par défaut, à confirmer avant l'étape qui les concerne (Q6 étape 2, Q7 et Q10 et Q12 étape 3, Q2 traçabilité de l'étape 3, Q11 étape 2, Q13 facultatif).
+- Intégration continue non mise en place (Q13, facultative).
+- Limite de l'outillage : l'application GitHub de Claude n'est pas installée sur le dépôt, Claude le lit mais n'y écrit pas ; les commits et les push sont faits par le développeur.
 
 **Jeu sur papier (matrice §5.2 et règles R01 à R15).**
 
@@ -578,7 +588,6 @@ Validateur, date et décision de clôture de M1 : ...
 - Aucune réinitialisation par e-mail ni double authentification : exclus par le périmètre de la version 2.0.
 - La traçabilité des actions sur les comptes dépend de la décision Q2 ; tant que M11 n'existe pas, elle reste dans le journal applicatif.
 - Le tableau de bord est provisoire jusqu'à la réalisation de M10.
-- Les versions de la pile ne sont pas confirmées tant que l'étape 0 n'est pas validée.
 
 ## Consignes de livraison
 
@@ -600,3 +609,7 @@ Ensuite, une étape à la fois : « Le cadrage est validé. Implémente **unique
 | 2026-10-22 | Q1 : création d'un projet vierge | Brichton | - |
 | 2026-10-22 | Q3 : journal consultable par administrateur et chargé d'événements | Brichton | ADR-003 |
 | 2026-10-22 | Q8 : R15 validée, amorçage du premier administrateur par commande | Brichton | ADR-004 |
+| 2026-10-29 | Matrice des droits §5.2 validée | Brichton | - |
+| 2026-10-29 | Q4 : mot de passe de 12 caractères minimum | Brichton | - |
+| 2026-10-29 | Q5 : 5 essais, blocage 1 à 15 min ; session 60 min, avertissement 2 min | Brichton | - |
+| 2026-10-29 | Q9 : code en français | Brichton | - |
