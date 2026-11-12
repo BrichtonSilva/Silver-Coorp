@@ -11,10 +11,10 @@
         @endif
     </div>
     <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="detail-grid">
             <div>
                 <div class="form-group">
-                    <label style="font-weight:600;">Type</label>
+                    <label class="detail-label">Type</label>
                     <p>
                         @if($venue->type === App\Models\Venue::TYPE_INTERNE)
                             <span class="badge badge-particulier">Interne</span>
@@ -25,29 +25,29 @@
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Capacité</label>
+                    <label class="detail-label">Capacité</label>
                     <p>{{ $venue->capacity }} personnes</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Prix de location</label>
+                    <label class="detail-label">Prix de location</label>
                     <p>{{ number_format($venue->rental_price, 2, ',', ' ') }} €</p>
                 </div>
             </div>
 
             <div>
                 <div class="form-group">
-                    <label style="font-weight:600;">Adresse</label>
+                    <label class="detail-label">Adresse</label>
                     <p>{{ $venue->address ?? '—' }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Créé par</label>
+                    <label class="detail-label">Créé par</label>
                     <p>{{ $venue->creator?->name ?? '—' }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Date de création</label>
+                    <label class="detail-label">Date de création</label>
                     <p>{{ $venue->created_at->format('d/m/Y H:i') }}</p>
                 </div>
             </div>

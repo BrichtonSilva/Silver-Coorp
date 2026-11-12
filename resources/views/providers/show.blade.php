@@ -11,10 +11,10 @@
         @endif
     </div>
     <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="detail-grid">
             <div>
                 <div class="form-group">
-                    <label style="font-weight:600;">Catégorie</label>
+                    <label class="detail-label">Catégorie</label>
                     <p>
                         <span class="badge badge-{{ $provider->category }}">
                             {{ App\Models\Provider::CATEGORY_LABELS[$provider->category] ?? $provider->category }}
@@ -23,34 +23,34 @@
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Contact</label>
+                    <label class="detail-label">Contact</label>
                     <p>{{ $provider->contact ?? '—' }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Téléphone</label>
+                    <label class="detail-label">Téléphone</label>
                     <p>{{ $provider->phone ?? '—' }}</p>
                 </div>
             </div>
 
             <div>
                 <div class="form-group">
-                    <label style="font-weight:600;">Email</label>
+                    <label class="detail-label">Email</label>
                     <p>{{ $provider->email ?? '—' }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Prix indicatif</label>
+                    <label class="detail-label">Prix indicatif</label>
                     <p>{{ $provider->indicative_price ? number_format($provider->indicative_price, 2, ',', ' ') . ' €' : '—' }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Créé par</label>
+                    <label class="detail-label">Créé par</label>
                     <p>{{ $provider->creator?->name ?? '—' }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Date de création</label>
+                    <label class="detail-label">Date de création</label>
                     <p>{{ $provider->created_at->format('d/m/Y H:i') }}</p>
                 </div>
             </div>

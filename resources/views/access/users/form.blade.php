@@ -78,7 +78,7 @@
                 </label>
             </div>
 
-            <div style="display:flex;gap:10px;margin-top:24px;">
+            <div class="form-actions">
                 <button type="submit" class="btn btn-primary">{{ $user ? 'Enregistrer les modifications' : 'Créer l\'utilisateur' }}</button>
                 <a href="{{ route('users.index') }}" class="btn btn-secondary">Annuler</a>
             </div>

@@ -51,7 +51,7 @@
                     @forelse($providers as $provider)
                     <tr>
                         <td>
-                            <a href="{{ route('providers.show', $provider) }}" style="color:var(--color-primary);text-decoration:none;font-weight:500;">
+                            <a href="{{ route('providers.show', $provider) }}" class="link">
                                 {{ $provider->name }}
                             </a>
                         </td>

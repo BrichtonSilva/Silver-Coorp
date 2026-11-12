@@ -64,7 +64,7 @@
                 @error('address') <div class="form-error">{{ $message }}</div> @enderror
             </div>
 
-            <div style="display:flex;gap:10px;margin-top:24px;">
+            <div class="form-actions">
                 <button type="submit" class="btn btn-primary">{{ $client ? 'Enregistrer les modifications' : 'Créer le client' }}</button>
                 <a href="{{ route('clients.index') }}" class="btn btn-secondary">Annuler</a>
             </div>

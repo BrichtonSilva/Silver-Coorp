@@ -11,10 +11,10 @@
         @endif
     </div>
     <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="detail-grid">
             <div>
                 <div class="form-group">
-                    <label style="font-weight:600;">Type</label>
+                    <label class="detail-label">Type</label>
                     <p>
                         @if($client->type === App\Models\Client::TYPE_PARTICULIER)
                             <span class="badge badge-particulier">Particulier</span>
@@ -25,29 +25,29 @@
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Email</label>
+                    <label class="detail-label">Email</label>
                     <p>{{ $client->email ?? '—' }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Téléphone</label>
+                    <label class="detail-label">Téléphone</label>
                     <p>{{ $client->phone ?? '—' }}</p>
                 </div>
             </div>
 
             <div>
                 <div class="form-group">
-                    <label style="font-weight:600;">Adresse</label>
+                    <label class="detail-label">Adresse</label>
                     <p>{{ $client->address ?? '—' }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Créé par</label>
+                    <label class="detail-label">Créé par</label>
                     <p>{{ $client->creator?->name ?? '—' }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Date de création</label>
+                    <label class="detail-label">Date de création</label>
                     <p>{{ $client->created_at->format('d/m/Y H:i') }}</p>
                 </div>
             </div>

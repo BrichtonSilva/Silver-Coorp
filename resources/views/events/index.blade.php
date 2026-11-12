@@ -87,22 +87,22 @@
                     @forelse($events as $event)
                     <tr>
                         <td>
-                            <a href="{{ route('events.show', $event) }}" style="color:var(--color-primary);text-decoration:none;font-weight:500;">
+                            <a href="{{ route('events.show', $event) }}" class="link">
                                 {{ $event->client?->name ?? '—' }}
                             </a>
                         </td>
                         <td>
                             @php
                                 $typeColors = [
-                                    'mariage' => ['bg' => '#fce7f3', 'color' => '#9d174d'],
-                                    'séminaire' => ['bg' => '#dbeafe', 'color' => '#1e40af'],
-                                    'conférence' => ['bg' => '#e0e7ff', 'color' => '#3730a3'],
-                                    'concert' => ['bg' => '#fef3c7', 'color' => '#92400e'],
-                                    'autre' => ['bg' => '#f3f4f6', 'color' => '#374151'],
+                                    'mariage' => 'badge-pink',
+                                    'séminaire' => 'badge-info',
+                                    'conférence' => 'badge-indigo',
+                                    'concert' => 'badge-warning',
+                                    'autre' => 'badge-neutral',
                                 ];
                                 $tc = $typeColors[$event->type] ?? $typeColors['autre'];
                             @endphp
-                            <span class="badge" style="background:{{ $tc['bg'] }};color:{{ $tc['color'] }};">
+                            <span class="badge {{ $tc }}">
                                 {{ App\Models\Event::TYPE_LABELS[$event->type] ?? $event->type }}
                             </span>
                         </td>
@@ -112,13 +112,13 @@
                         <td>{{ $event->guest_count }}</td>
                         <td>
                             @if($event->status === App\Models\Event::STATUS_BROUILLON)
-                                <span class="badge" style="background:#f3f4f6;color:#374151;">Brouillon</span>
+                                <span class="badge badge-neutral">Brouillon</span>
                             @elseif($event->status === App\Models\Event::STATUS_CONFIRME)
-                                <span class="badge" style="background:#dbeafe;color:#1e40af;">Confirmé</span>
+                                <span class="badge badge-info">Confirmé</span>
                             @elseif($event->status === App\Models\Event::STATUS_TERMINE)
-                                <span class="badge" style="background:#d1fae5;color:#065f46;">Terminé</span>
+                                <span class="badge badge-success">Terminé</span>
                             @elseif($event->status === App\Models\Event::STATUS_ANNULE)
-                                <span class="badge" style="background:#fee2e2;color:#991b1b;">Annulé</span>
+                                <span class="badge badge-danger">Annulé</span>
                             @endif
                         </td>
                         <td>

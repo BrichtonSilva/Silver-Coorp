@@ -36,7 +36,7 @@
                 @error('address') <div class="form-error">{{ $message }}</div> @enderror
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div class="detail-grid">
                 <div class="form-group">
                     <label for="capacity">Capacité <span class="required" aria-hidden="true">*</span></label>
                     <input type="number" id="capacity" name="capacity" class="form-control"
@@ -66,7 +66,7 @@
                 @error('type') <div class="form-error">{{ $message }}</div> @enderror
             </div>
 
-            <div style="display:flex;gap:10px;margin-top:24px;">
+            <div class="form-actions">
                 <button type="submit" class="btn btn-primary">{{ $venue ? 'Enregistrer les modifications' : 'Créer le lieu' }}</button>
                 <a href="{{ route('venues.index') }}" class="btn btn-secondary">Annuler</a>
             </div>

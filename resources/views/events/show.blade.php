@@ -11,52 +11,52 @@
         @endif
     </div>
     <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="detail-grid">
             <div>
                 <div class="form-group">
-                    <label style="font-weight:600;">Client</label>
+                    <label class="detail-label">Client</label>
                     <p>
-                        <a href="{{ route('clients.show', $event->client) }}" style="color:var(--color-primary);text-decoration:none;font-weight:500;">
+                        <a href="{{ route('clients.show', $event->client) }}" class="link">
                             {{ $event->client?->name ?? '—' }}
                         </a>
                     </p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Type</label>
+                    <label class="detail-label">Type</label>
                     <p>
                         @php
                             $typeColors = [
-                                'mariage' => ['bg' => '#fce7f3', 'color' => '#9d174d'],
-                                'séminaire' => ['bg' => '#dbeafe', 'color' => '#1e40af'],
-                                'conférence' => ['bg' => '#e0e7ff', 'color' => '#3730a3'],
-                                'concert' => ['bg' => '#fef3c7', 'color' => '#92400e'],
-                                'autre' => ['bg' => '#f3f4f6', 'color' => '#374151'],
+                                'mariage' => 'badge-pink',
+                                'séminaire' => 'badge-info',
+                                'conférence' => 'badge-indigo',
+                                'concert' => 'badge-warning',
+                                'autre' => 'badge-neutral',
                             ];
                             $tc = $typeColors[$event->type] ?? $typeColors['autre'];
                         @endphp
-                        <span class="badge" style="background:{{ $tc['bg'] }};color:{{ $tc['color'] }};">
+                        <span class="badge {{ $tc }}">
                             {{ App\Models\Event::TYPE_LABELS[$event->type] ?? $event->type }}
                         </span>
                     </p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Date</label>
+                    <label class="detail-label">Date</label>
                     <p>{{ $event->date->format('d/m/Y') }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Horaire</label>
+                    <label class="detail-label">Horaire</label>
                     <p>{{ \Illuminate\Support\Carbon::parse($event->start_time)->format('H:i') }} – {{ \Illuminate\Support\Carbon::parse($event->end_time)->format('H:i') }}</p>
                 </div>
             </div>
 
             <div>
                 <div class="form-group">
-                    <label style="font-weight:600;">Lieu</label>
+                    <label class="detail-label">Lieu</label>
                     <p>
-                        <a href="{{ route('venues.show', $event->venue) }}" style="color:var(--color-primary);text-decoration:none;font-weight:500;">
+                        <a href="{{ route('venues.show', $event->venue) }}" class="link">
                             {{ $event->venue?->name ?? '—' }}
                         </a>
                         @if($event->venue)
@@ -66,17 +66,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Nombre d'invités</label>
+                    <label class="detail-label">Nombre d'invités</label>
                     <p>{{ $event->guest_count }}</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Budget</label>
+                    <label class="detail-label">Budget</label>
                     <p>{{ number_format($event->budget, 2, ',', ' ') }} €</p>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight:600;">Chargé d'événements</label>
+                    <label class="detail-label">Chargé d'événements</label>
                     <p>{{ $event->chargedUser?->name ?? '—' }}</p>
                 </div>
             </div>
@@ -84,34 +84,34 @@
 
         <div style="margin-top:16px;border-top:1px solid var(--color-border);padding-top:16px;">
             <div class="form-group">
-                <label style="font-weight:600;">Statut</label>
+                <label class="detail-label">Statut</label>
                 <p>
                     @if($event->status === App\Models\Event::STATUS_BROUILLON)
-                        <span class="badge" style="background:#f3f4f6;color:#374151;">Brouillon</span>
+                        <span class="badge badge-neutral">Brouillon</span>
                     @elseif($event->status === App\Models\Event::STATUS_CONFIRME)
-                        <span class="badge" style="background:#dbeafe;color:#1e40af;">Confirmé</span>
+                        <span class="badge badge-info">Confirmé</span>
                     @elseif($event->status === App\Models\Event::STATUS_TERMINE)
-                        <span class="badge" style="background:#d1fae5;color:#065f46;">Terminé</span>
+                        <span class="badge badge-success">Terminé</span>
                     @elseif($event->status === App\Models\Event::STATUS_ANNULE)
-                        <span class="badge" style="background:#fee2e2;color:#991b1b;">Annulé</span>
+                        <span class="badge badge-danger">Annulé</span>
                     @endif
                 </p>
             </div>
 
             @if($event->cancellation_reason)
             <div class="form-group">
-                <label style="font-weight:600;">Motif d'annulation</label>
+                <label class="detail-label">Motif d'annulation</label>
                 <p>{{ $event->cancellation_reason }}</p>
             </div>
             @endif
 
             <div class="form-group">
-                <label style="font-weight:600;">Date de création</label>
+                <label class="detail-label">Date de création</label>
                 <p>{{ $event->created_at->format('d/m/Y H:i') }}</p>
             </div>
         </div>
 
-        <div style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;">
+        <div class="form-actions">
             <a href="{{ route('events.index') }}" class="btn btn-secondary">Retour à la liste</a>
 
             @if(auth()->user()->canWrite())
@@ -149,22 +149,22 @@
             $overBudget = $event->isOverBudget();
             $progressPercent = $event->budget > 0 ? min(100, ($realExpenses / $event->budget) * 100) : 0;
         @endphp
-        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:16px;margin-bottom:20px;">
-            <div style="text-align:center;padding:16px;background:var(--color-bg);border-radius:var(--radius);">
+        <div class="kpi-grid">
+            <div class="stat-box">
                 <div style="font-size:0.8rem;color:var(--color-text-muted);">Budget prévisionnel</div>
                 <div style="font-size:1.3rem;font-weight:700;">{{ number_format($event->budget, 2, ',', ' ') }} €</div>
             </div>
-            <div style="text-align:center;padding:16px;background:var(--color-bg);border-radius:var(--radius);">
+            <div class="stat-box">
                 <div style="font-size:0.8rem;color:var(--color-text-muted);">Dépenses réelles</div>
                 <div style="font-size:1.3rem;font-weight:700;">{{ number_format($realExpenses, 2, ',', ' ') }} €</div>
             </div>
-            <div style="text-align:center;padding:16px;background:var(--color-bg);border-radius:var(--radius);">
+            <div class="stat-box">
                 <div style="font-size:0.8rem;color:var(--color-text-muted);">Reste disponible</div>
                 <div style="font-size:1.3rem;font-weight:700;{{ $overBudget ? 'color:var(--color-danger);' : 'color:var(--color-success);' }}">
                     {{ number_format($remaining, 2, ',', ' ') }} €
                 </div>
             </div>
-            <div style="text-align:center;padding:16px;background:var(--color-bg);border-radius:var(--radius);">
+            <div class="stat-box">
                 <div style="font-size:0.8rem;color:var(--color-text-muted);">Utilisation</div>
                 <div style="font-size:1.3rem;font-weight:700;">{{ number_format($progressPercent, 1, ',', ' ') }} %</div>
             </div>
@@ -192,7 +192,7 @@
         @if(auth()->user()->canWrite() && !$event->isTerminated() && !$event->isCancelled())
         <form id="add-assignment-form" method="POST" action="{{ route('events.assignments.store', $event) }}" style="display:none;margin-bottom:20px;padding:16px;background:var(--color-bg);border-radius:var(--radius);">
             @csrf
-            <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end;">
+            <div class="inline-form-grid">
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Prestataire <span class="required">*</span></label>
                     <select name="provider_id" class="form-control" required>
@@ -241,7 +241,7 @@
                     <tr>
                         <td>{{ $assignment->provider->name }}</td>
                         <td>
-                            <span class="badge" style="background:#e0e7ff;color:#3730a3;">
+                            <span class="badge badge-indigo">
                                 {{ App\Models\Provider::CATEGORY_LABELS[$assignment->provider->category] ?? $assignment->provider->category }}
                             </span>
                         </td>
@@ -249,14 +249,14 @@
                         <td>
                             @php
                                 $statusColors = [
-                                    'a_contacter' => ['bg' => '#fef3c7', 'color' => '#92400e'],
-                                    'contacte' => ['bg' => '#dbeafe', 'color' => '#1e40af'],
-                                    'confirme' => ['bg' => '#d1fae5', 'color' => '#065f46'],
-                                    'annule' => ['bg' => '#fee2e2', 'color' => '#991b1b'],
+                                    'a_contacter' => 'badge-warning',
+                                    'contacte' => 'badge-info',
+                                    'confirme' => 'badge-success',
+                                    'annule' => 'badge-danger',
                                 ];
-                                $sc = $statusColors[$assignment->status] ?? ['bg' => '#f3f4f6', 'color' => '#374151'];
+                                $sc = $statusColors[$assignment->status] ?? 'badge-neutral';
                             @endphp
-                            <span class="badge" style="background:{{ $sc['bg'] }};color:{{ $sc['color'] }};">
+                            <span class="badge {{ $sc }}">
                                 {{ $assignment->statusLabel() }}
                             </span>
                         </td>
@@ -300,7 +300,7 @@
         <h3>Checklist de préparation</h3>
         @php $progress = $event->checklistProgress(); @endphp
         <div style="display:flex;align-items:center;gap:12px;">
-            <span class="badge" style="background:{{ $progress === 100 ? '#d1fae5' : '#dbeafe' }};color:{{ $progress === 100 ? '#065f46' : '#1e40af' }};">
+            <span class="badge {{ $progress === 100 ? 'badge-success' : 'badge-info' }}">
                 {{ $progress }} %
             </span>
             @if(auth()->user()->canWrite() && !$event->isTerminated() && !$event->isCancelled())
@@ -312,7 +312,7 @@
         @if(auth()->user()->canWrite() && !$event->isTerminated() && !$event->isCancelled())
         <form id="add-task-form" method="POST" action="{{ route('events.tasks.store', $event) }}" style="display:none;margin-bottom:20px;padding:16px;background:var(--color-bg);border-radius:var(--radius);">
             @csrf
-            <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end;">
+            <div class="inline-form-grid">
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Intitulé <span class="required">*</span></label>
                     <input type="text" name="title" class="form-control" required maxlength="255" value="{{ old('title') }}">
@@ -353,7 +353,7 @@
                 </thead>
                 <tbody>
                     @foreach($event->tasks as $task)
-                    <tr style="{{ $task->isOverdue() ? 'background:#fef2f2;' : '' }}">
+                    <tr class="{{ $task->isOverdue() ? 'row-overdue' : '' }}">
                         <td>
                             <form method="POST" action="{{ route('events.tasks.toggle', [$event, $task]) }}" style="display:inline;">
                                 @csrf
@@ -361,16 +361,16 @@
                                 <input type="checkbox" {{ $task->is_done ? 'checked' : '' }} onchange="this.form.submit()" style="cursor:pointer;width:18px;height:18px;" aria-label="Marquer comme {{ $task->is_done ? 'non faite' : 'faite' }}">
                             </form>
                         </td>
-                        <td style="{{ $task->is_done ? 'text-decoration:line-through;color:var(--color-text-muted);' : '' }}">{{ $task->title }}</td>
+                        <td class="{{ $task->is_done ? 'line-through' : '' }}">{{ $task->title }}</td>
                         <td>{{ $task->responsible ?? '—' }}</td>
                         <td>{{ $task->due_date?->format('d/m/Y') ?? '—' }}</td>
                         <td>
                             @if($task->is_done)
-                                <span class="badge" style="background:#d1fae5;color:#065f46;">Faite</span>
+                                <span class="badge badge-success">Faite</span>
                             @elseif($task->isOverdue())
-                                <span class="badge" style="background:#fee2e2;color:#991b1b;">En retard</span>
+                                <span class="badge badge-danger">En retard</span>
                             @else
-                                <span class="badge" style="background:#fef3c7;color:#92400e;">À faire</span>
+                                <span class="badge badge-warning">À faire</span>
                             @endif
                         </td>
                         @if(auth()->user()->canWrite() && !$event->isTerminated() && !$event->isCancelled())
@@ -419,7 +419,7 @@
                     <tr>
                         <td>{{ $entry->created_at->format('d/m/Y H:i') }}</td>
                         <td>
-                            <span class="badge" style="background:#e0e7ff;color:#3730a3;">{{ $entry->actionLabel() }}</span>
+                            <span class="badge badge-indigo">{{ $entry->actionLabel() }}</span>
                         </td>
                         <td>{{ $entry->user?->name ?? 'Système' }}</td>
                         <td>{{ $entry->details ?? '—' }}</td>

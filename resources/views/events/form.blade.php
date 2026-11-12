@@ -22,7 +22,7 @@
             @csrf
             @if($event) @method('PUT') @endif
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div class="detail-grid">
                 <div>
                     <div class="form-group">
                         <label for="client_id">Client <span class="required" aria-hidden="true">*</span></label>
@@ -57,7 +57,7 @@
                         @error('date') <div class="form-error">{{ $message }}</div> @enderror
                     </div>
 
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="grid-2">
                         <div class="form-group">
                             <label for="start_time">Heure de début <span class="required" aria-hidden="true">*</span></label>
                             <input type="time" id="start_time" name="start_time" class="form-control"
@@ -120,7 +120,7 @@
                 </div>
             </div>
 
-            <div style="display:flex;gap:10px;margin-top:24px;">
+            <div class="form-actions">
                 <button type="submit" class="btn btn-primary">{{ $event ? 'Enregistrer les modifications' : 'Créer l\'événement' }}</button>
                 <a href="{{ route('events.index') }}" class="btn btn-secondary">Annuler</a>
             </div>

@@ -50,7 +50,7 @@
                     @forelse($venues as $venue)
                     <tr>
                         <td>
-                            <a href="{{ route('venues.show', $venue) }}" style="color:var(--color-primary);text-decoration:none;font-weight:500;">
+                            <a href="{{ route('venues.show', $venue) }}" class="link">
                                 {{ $venue->name }}
                             </a>
                         </td>

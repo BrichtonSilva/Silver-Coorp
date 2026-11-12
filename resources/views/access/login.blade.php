@@ -5,6 +5,7 @@
 @section('content')
 <div class="login-page">
     <div class="login-card">
+        <div class="brand-mark"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
         <h1>Eventia</h1>
         <p class="subtitle">Gestion d'événements — Connectez-vous</p>
 

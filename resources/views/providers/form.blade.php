@@ -74,7 +74,7 @@
                 @error('indicative_price') <div class="form-error">{{ $message }}</div> @enderror
             </div>
 
-            <div style="display:flex;gap:10px;margin-top:24px;">
+            <div class="form-actions">
                 <button type="submit" class="btn btn-primary">{{ $provider ? 'Enregistrer les modifications' : 'Créer le prestataire' }}</button>
                 <a href="{{ route('providers.index') }}" class="btn btn-secondary">Annuler</a>
             </div>
