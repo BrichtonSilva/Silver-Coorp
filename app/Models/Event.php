@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class Event extends Model
 {
@@ -194,6 +195,30 @@ class Event extends Model
     public function isDraft(): bool
     {
         return $this->status === self::STATUS_BROUILLON;
+    }
+
+    /**
+     * RG3: does another non-cancelled event already use this venue on this date
+     * with an overlapping time range? Back-to-back bookings are allowed.
+     * whereDate/whereTime keep this correct whatever the stored date/time format.
+     */
+    public static function venueConflictExists(
+        int|string $venueId,
+        string $date,
+        string $startTime,
+        string $endTime,
+        ?int $excludeEventId = null
+    ): bool {
+        $start = Carbon::parse($startTime)->format('H:i:s');
+        $end = Carbon::parse($endTime)->format('H:i:s');
+
+        return static::where('venue_id', $venueId)
+            ->whereDate('date', $date)
+            ->where('status', '!=', self::STATUS_ANNULE)
+            ->when($excludeEventId, fn ($query) => $query->where('id', '!=', $excludeEventId))
+            ->whereTime('start_time', '<', $end)
+            ->whereTime('end_time', '>', $start)
+            ->exists();
     }
 
     /**

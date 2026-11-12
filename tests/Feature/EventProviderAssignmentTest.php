@@ -316,7 +316,8 @@ class EventProviderAssignmentTest extends TestCase
 
     private function createEvent(User $user, array $overrides = []): Event
     {
-        $venue = Venue::factory()->create();
+        // Fixed rental price and capacity: the factory's random values made budget tests flaky
+        $venue = Venue::factory()->create(['rental_price' => 0, 'capacity' => 500]);
         $client = Client::factory()->create();
 
         return Event::create(array_merge([

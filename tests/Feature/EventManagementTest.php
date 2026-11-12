@@ -517,8 +517,8 @@ class EventManagementTest extends TestCase
         $response = $this->actingAs($admin)->get('/events?type=mariage');
 
         $response->assertStatus(200);
-        $response->assertSee('Mariage');
-        $response->assertDontSee('Concert');
+        $types = collect($response->viewData('events')->items())->pluck('type')->all();
+        $this->assertSame([Event::TYPE_MARIAGE], $types);
     }
 
     public function test_us10_filter_by_status(): void
@@ -544,8 +544,8 @@ class EventManagementTest extends TestCase
         $response = $this->actingAs($admin)->get("/events?venue={$venueA->id}");
 
         $response->assertStatus(200);
-        $response->assertSee('Salle Alpha');
-        $response->assertDontSee('Salle Beta');
+        $venueIds = collect($response->viewData('events')->items())->pluck('venue_id')->all();
+        $this->assertSame([$venueA->id], $venueIds);
     }
 
     public function test_us10_filter_by_date_range(): void

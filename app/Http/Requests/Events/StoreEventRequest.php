@@ -70,29 +70,12 @@ class StoreEventRequest extends FormRequest
 
             // RG3: No double booking
             if (!empty($data['venue_id']) && !empty($data['date']) && !empty($data['start_time']) && !empty($data['end_time'])) {
-                $conflict = Event::where('venue_id', $data['venue_id'])
-                    ->where('date', $data['date'])
-                    ->where('status', '!=', Event::STATUS_ANNULE)
-                    ->where(function ($query) use ($data) {
-                        $query->where(function ($q) use ($data) {
-                            // Existing event starts during the new event
-                            $q->where('start_time', '>=', $data['start_time'])
-                              ->where('start_time', '<', $data['end_time']);
-                        })->orWhere(function ($q) use ($data) {
-                            // Existing event ends during the new event
-                            $q->where('end_time', '>', $data['start_time'])
-                              ->where('end_time', '<=', $data['end_time']);
-                        })->orWhere(function ($q) use ($data) {
-                            // Existing event completely covers the new event
-                            $q->where('start_time', '<=', $data['start_time'])
-                              ->where('end_time', '>=', $data['end_time']);
-                        })->orWhere(function ($q) use ($data) {
-                            // New event completely covers the existing event
-                            $q->where('start_time', '>=', $data['start_time'])
-                              ->where('end_time', '<=', $data['end_time']);
-                        });
-                    })
-                    ->exists();
+                $conflict = Event::venueConflictExists(
+                    $data['venue_id'],
+                    $data['date'],
+                    $data['start_time'],
+                    $data['end_time']
+                );
 
                 if ($conflict) {
                     $validator->errors()->add('venue_id', 'Ce lieu est déjà réservé pour cette plage horaire.');

@@ -107,7 +107,7 @@ class JournalTest extends TestCase
         $response = $this->actingAs($charge)->get("/events/{$event->id}");
 
         $response->assertStatus(200);
-        $response->assertSee('Journal d\'historique');
+        $response->assertSee("Journal d'historique", false);
         $response->assertSee('Création');
         $response->assertSee('Modification');
         $response->assertSee($charge->name);

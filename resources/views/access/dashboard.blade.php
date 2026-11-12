@@ -10,7 +10,7 @@ use App\Models\Task;
 
 $upcomingEvents = Event::where('date', '>=', now()->toDateString())
     ->where('status', '!=', Event::STATUS_ANNULE)
-    ->where('date', '<=', now()->addDays(30)->toDateString())
+    ->whereDate('date', '<=', now()->addDays(30)->toDateString())
     ->orderBy('date')
     ->with(['client', 'venue'])
     ->get();
@@ -32,7 +32,7 @@ $alerts = [];
 
 // Provider not confirmed with event <= 15 days
 $soonEvents = Event::where('date', '>=', now()->toDateString())
-    ->where('date', '<=', now()->addDays(15)->toDateString())
+    ->whereDate('date', '<=', now()->addDays(15)->toDateString())
     ->where('status', Event::STATUS_CONFIRME)
     ->with(['assignments.provider'])
     ->get();

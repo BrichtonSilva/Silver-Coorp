@@ -16,10 +16,15 @@ class UpdateEventRequest extends FormRequest
 
     public function rules(): array
     {
+        // A terminated or cancelled event cannot be edited: let the controller
+        // answer with its own message instead of failing on a past date.
+        $event = $this->route('event');
+        $locked = $event instanceof Event && ($event->isTerminated() || $event->isCancelled());
+
         return [
             'client_id' => ['required', 'integer', 'exists:clients,id'],
             'type' => ['required', Rule::in(Event::TYPES)],
-            'date' => ['required', 'date', 'after_or_equal:today'],
+            'date' => $locked ? ['required', 'date'] : ['required', 'date', 'after_or_equal:today'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'venue_id' => ['required', 'integer', 'exists:venues,id'],
@@ -71,26 +76,13 @@ class UpdateEventRequest extends FormRequest
 
             // RG3: No double booking (exclude current event)
             if (!empty($data['venue_id']) && !empty($data['date']) && !empty($data['start_time']) && !empty($data['end_time'])) {
-                $conflict = Event::where('venue_id', $data['venue_id'])
-                    ->where('date', $data['date'])
-                    ->where('status', '!=', Event::STATUS_ANNULE)
-                    ->where('id', '!=', $event->id)
-                    ->where(function ($query) use ($data) {
-                        $query->where(function ($q) use ($data) {
-                            $q->where('start_time', '>=', $data['start_time'])
-                              ->where('start_time', '<', $data['end_time']);
-                        })->orWhere(function ($q) use ($data) {
-                            $q->where('end_time', '>', $data['start_time'])
-                              ->where('end_time', '<=', $data['end_time']);
-                        })->orWhere(function ($q) use ($data) {
-                            $q->where('start_time', '<=', $data['start_time'])
-                              ->where('end_time', '>=', $data['end_time']);
-                        })->orWhere(function ($q) use ($data) {
-                            $q->where('start_time', '>=', $data['start_time'])
-                              ->where('end_time', '<=', $data['end_time']);
-                        });
-                    })
-                    ->exists();
+                $conflict = Event::venueConflictExists(
+                    $data['venue_id'],
+                    $data['date'],
+                    $data['start_time'],
+                    $data['end_time'],
+                    $event->id
+                );
 
                 if ($conflict) {
                     $validator->errors()->add('venue_id', 'Ce lieu est déjà réservé pour cette plage horaire.');

@@ -40,15 +40,15 @@ class EventController extends Controller
 
         // Filter by date (exact)
         if ($date = $request->input('date')) {
-            $query->where('date', $date);
+            $query->whereDate('date', $date);
         }
 
         // Filter by date range
         if ($dateFrom = $request->input('date_from')) {
-            $query->where('date', '>=', $dateFrom);
+            $query->whereDate('date', '>=', $dateFrom);
         }
         if ($dateTo = $request->input('date_to')) {
-            $query->where('date', '<=', $dateTo);
+            $query->whereDate('date', '<=', $dateTo);
         }
 
         // Filter by venue
