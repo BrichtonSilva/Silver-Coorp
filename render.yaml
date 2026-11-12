@@ -1,0 +1,14 @@
+# Blueprint Render : crée le site à partir du Dockerfile, avec déploiement automatique
+services:
+  - type: web
+    name: eventia
+    runtime: docker
+    plan: free
+    branch: develop            # remplace par main quand tu fusionnes
+    autoDeployTrigger: checksPass   # déploie seulement si les tests GitHub Actions passent
+    healthCheckPath: /up
+    envVars:
+      - key: APP_KEY
+        generateValue: true
+      - key: SEED_DEMO
+        value: "true"
