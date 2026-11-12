@@ -281,9 +281,47 @@
         .login-card .form-group:last-child { margin-bottom: 0; }
         .login-card .btn { width: 100%; justify-content: center; margin-top: 8px; }
 
+        /* Menu mobile */
+        .menu-toggle {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            background: var(--color-surface);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        .menu-toggle:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+        .topbar-title { display: flex; align-items: center; gap: 12px; }
+        .sidebar-backdrop { display: none; }
+
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar { display: none; }
+            .menu-toggle { display: inline-flex; }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                z-index: 90;
+                overflow-y: auto;
+                visibility: hidden;
+                transform: translateX(-100%);
+                transition: transform 0.2s ease, visibility 0.2s;
+            }
+            .sidebar.open { visibility: visible; transform: translateX(0); }
+            .sidebar-backdrop.open {
+                display: block;
+                position: fixed;
+                inset: 0;
+                z-index: 80;
+                background: rgba(0, 0, 0, 0.4);
+            }
+            .topbar { padding: 12px 16px; }
             .content { padding: 16px; }
             .filters { flex-direction: column; }
         }
@@ -295,7 +333,7 @@
     @auth
     <div class="layout-wrapper">
         <!-- Sidebar -->
-        <aside class="sidebar" role="navigation" aria-label="Navigation principale">
+        <aside class="sidebar" id="sidebar" role="navigation" aria-label="Navigation principale">
             <div class="sidebar-header">
                 <h1>Eventia</h1>
                 <p>Gestion d'événements</p>
@@ -331,11 +369,15 @@
                 </form>
             </div>
         </aside>
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
         <!-- Main content -->
         <div class="main-content">
             <header class="topbar">
-                <h2>@yield('title', 'Eventia')</h2>
+                <div class="topbar-title">
+                    <button type="button" class="menu-toggle" id="menu-toggle" aria-label="Ouvrir le menu" aria-controls="sidebar" aria-expanded="false">&#9776; Menu</button>
+                    <h2>@yield('title', 'Eventia')</h2>
+                </div>
             </header>
             <main id="main-content" class="content" role="main">
                 @if(session('success'))
@@ -355,6 +397,32 @@
         @endif
         @yield('content')
     </main>
+    @endauth
+
+    @auth
+    <script>
+        (function () {
+            var toggle = document.getElementById('menu-toggle');
+            var sidebar = document.getElementById('sidebar');
+            var backdrop = document.getElementById('sidebar-backdrop');
+            if (!toggle || !sidebar || !backdrop) { return; }
+
+            function setOpen(open) {
+                sidebar.classList.toggle('open', open);
+                backdrop.classList.toggle('open', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                toggle.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+            }
+
+            toggle.addEventListener('click', function () {
+                setOpen(!sidebar.classList.contains('open'));
+            });
+            backdrop.addEventListener('click', function () { setOpen(false); });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') { setOpen(false); }
+            });
+        })();
+    </script>
     @endauth
 </body>
 </html>
