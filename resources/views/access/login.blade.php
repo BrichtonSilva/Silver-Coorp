@@ -4,17 +4,24 @@
 
 @section('content')
 <div class="auth-shell">
-    {{-- Panneau de présentation (masqué sur petit écran) --}}
+    {{-- Panneau de présentation (au-dessus du formulaire sur téléphone) --}}
     <section class="auth-aside" aria-label="Présentation d'Eventia">
-        <div class="auth-brand">
-            <div class="brand-mark"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
-            <span>Eventia</span>
+        <span class="auth-orb o1" aria-hidden="true"></span>
+        <span class="auth-orb o2" aria-hidden="true"></span>
+        <span class="auth-orb o3" aria-hidden="true"></span>
+
+        <div class="auth-stage">
+            <div class="auth-logo" aria-hidden="true">
+                <span class="ring r1"></span><span class="ring r2"></span>
+                <span class="auth-logo-mark"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 15l2.5 2.5L16 13"/></svg></span>
+                <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>
+            </div>
+            <p class="auth-wordmark">Eventia</p>
+            <h2>Organisez chaque <span class="rotator" id="rotator">événement</span>, sans stress.</h2>
+            <p class="auth-lead">Clients, lieux, prestataires et budget réunis au même endroit, pour que rien ne soit oublié.</p>
         </div>
 
-        <div class="auth-hero">
-            <h2>Organisez chaque événement, sans stress.</h2>
-            <p>Clients, lieux, prestataires et budget réunis au même endroit, pour que rien ne soit oublié.</p>
-            <ul class="auth-features">
+        <ul class="auth-features">
                 <li>
                     <span class="fi"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg></span>
                     <div><strong>Zéro double réservation</strong><span>Un lieu ou un prestataire ne peut pas être pris deux fois en même temps.</span></div>
@@ -31,8 +38,7 @@
                     <span class="fi"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>
                     <div><strong>Alertes en temps réel</strong><span>Prestataire non confirmé, tâche en retard : tout est signalé.</span></div>
                 </li>
-            </ul>
-        </div>
+        </ul>
 
         <div class="auth-floats" aria-hidden="true">
             <div class="float-card"><span class="dot" style="background:#ec4899;"></span><div><strong>Mariage Bernard</strong><small>26 nov. · Salle des fêtes</small></div></div>
@@ -155,6 +161,22 @@
             submit.removeAttribute('aria-busy');
             label.textContent = 'Se connecter';
         });
+
+
+        // Mot qui change dans le slogan
+        var rot = document.getElementById('rotator');
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (rot && !reduce) {
+            var words = ['mariage', 'séminaire', 'concert', 'conférence', 'événement'], i = 0;
+            setInterval(function () {
+                rot.classList.add('out');
+                setTimeout(function () {
+                    i = (i + 1) % words.length;
+                    rot.textContent = words[i];
+                    rot.classList.remove('out');
+                }, 280);
+            }, 2600);
+        }
 
         // Comptes de démonstration
         document.querySelectorAll('.demo-chip').forEach(function (btn) {
