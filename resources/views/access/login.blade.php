@@ -97,6 +97,29 @@
     /* Le mot qui change reste collé à la virgule (pas de saut de ligne avant « , ») */
     .nb { white-space: nowrap; }
 
+    /* ===== Photos de fond (panneaux 1 et 2) =====
+       Fichiers à déposer dans public/images/login/ : accueil.jpg et atouts.jpg.
+       Le voile indigo garde le texte lisible ; si une photo est absente, l'ancien dégradé reste visible. */
+    .slides .auth-aside.has-photo {
+        --veil: radial-gradient(ellipse 75% 65% at 50% 50%, rgba(30,27,75,0.74) 0%, rgba(30,27,75,0.34) 100%);
+        background:
+            var(--veil),
+            var(--photo) center / cover no-repeat,
+            linear-gradient(145deg, #312e81 0%, #4f46e5 55%, #7c3aed 100%);
+        animation: none;
+    }
+    /* Panneau 2 : plus de contenu, donc voile plus régulier */
+    .slides #slide-atouts.has-photo {
+        --veil: linear-gradient(180deg, rgba(30,27,75,0.50) 0%, rgba(30,27,75,0.72) 55%, rgba(30,27,75,0.55) 100%);
+    }
+    .slides .has-photo .auth-orb { display: none; }
+    .slides .has-photo .auth-stage h2,
+    .slides .has-photo .auth-wordmark,
+    .slides .has-photo .auth-lead,
+    .slides .has-photo .sl-title { text-shadow: 0 2px 18px rgba(15,23,42,0.5); }
+    .slides .has-photo .auth-features li { background: rgba(15,23,42,0.38); border-color: rgba(255,255,255,0.22); }
+    .slides .has-photo .float-card { box-shadow: 0 18px 40px rgba(0,0,0,0.4); }
+
     /* Panneau 3 : formulaire */
     .slides .auth-main {
         position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
@@ -135,7 +158,7 @@
     <div class="slides-track" id="slides-track">
 
         {{-- Panneau 1 : logo Eventia et slogan --}}
-        <section class="slide auth-aside" id="slide-accueil" aria-label="Accueil, 1 sur 3">
+        <section class="slide auth-aside has-photo" id="slide-accueil" aria-label="Accueil, 1 sur 3" style="--photo: url('{{ asset('images/login/accueil.jpg') }}');">
             <span class="auth-orb o1" aria-hidden="true"></span>
             <span class="auth-orb o2" aria-hidden="true"></span>
             <span class="auth-orb o3" aria-hidden="true"></span>
@@ -163,7 +186,7 @@
         </section>
 
         {{-- Panneau 2 : points forts et cartes d'exemple --}}
-        <section class="slide auth-aside" id="slide-atouts" aria-label="Points forts, 2 sur 3">
+        <section class="slide auth-aside has-photo" id="slide-atouts" aria-label="Points forts, 2 sur 3" style="--photo: url('{{ asset('images/login/atouts.jpg') }}');">
             <span class="auth-orb o1" aria-hidden="true"></span>
             <span class="auth-orb o2" aria-hidden="true"></span>
 
