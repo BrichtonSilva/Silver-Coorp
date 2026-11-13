@@ -100,18 +100,27 @@
     /* ===== Photos de fond (panneaux 1 et 2) =====
        Fichiers à déposer dans public/images/login/ : accueil.jpg et atouts.jpg.
        Le voile indigo garde le texte lisible ; si une photo est absente, l'ancien dégradé reste visible. */
+    /* Les couleurs suivent la photo : le script en bas de page lit chaque image et règle
+       --h (teinte dominante), --a1 / --a2 (densité du voile), --accent, --ink et --btn-fg.
+       Valeurs par défaut = indigo d'origine (photo absente ou illisible). */
     .slides .auth-aside.has-photo {
-        --veil: radial-gradient(ellipse 75% 65% at 50% 50%, rgba(30,27,75,0.74) 0%, rgba(30,27,75,0.34) 100%);
+        --h: 245; --a1: 0.74; --a2: 0.34;
+        --veil: radial-gradient(ellipse 75% 65% at 50% 50%, hsl(var(--h) 47% 20% / var(--a1)) 0%, hsl(var(--h) 47% 20% / var(--a2)) 100%);
         background:
             var(--veil),
             var(--photo) center / cover no-repeat,
             linear-gradient(145deg, #312e81 0%, #4f46e5 55%, #7c3aed 100%);
+        color: var(--ink, #fff);
         animation: none;
+        transition: color 0.4s ease;
     }
     /* Panneau 2 : plus de contenu, donc voile plus régulier */
     .slides #slide-atouts.has-photo {
-        --veil: linear-gradient(180deg, rgba(30,27,75,0.50) 0%, rgba(30,27,75,0.72) 55%, rgba(30,27,75,0.55) 100%);
+        --veil: linear-gradient(180deg, hsl(var(--h) 47% 20% / calc(var(--a1) - 0.2)) 0%, hsl(var(--h) 47% 20% / var(--a1)) 55%, hsl(var(--h) 47% 20% / calc(var(--a1) - 0.15)) 100%);
     }
+    .slides .has-photo .rotator { color: var(--accent, #fde68a); }
+    .slides .has-photo .sl-btn:not(.sl-btn-ghost) { color: var(--btn-fg, #3730a3); }
+    .slides .has-photo .auth-features .fi { color: var(--accent, #fff); }
     .slides .has-photo .auth-orb { display: none; }
     .slides .has-photo .auth-stage h2,
     .slides .has-photo .auth-wordmark,
@@ -392,6 +401,56 @@
             track.scrollTo({ left: start * track.clientWidth, behavior: 'instant' });
             if (start === 2 && finePointer) { focusForm(); }
         }
+
+        // ----- Couleurs accordées aux photos -----
+        // Lit chaque photo (hébergée sur le même site) pour en tirer la teinte dominante et la luminosité,
+        // puis règle le voile, l'accent du slogan, la couleur du texte et celle des boutons.
+        function tuneToPhoto(section) {
+            var m = /url\(\s*["']?([^"')]+)["']?\s*\)/.exec(section.style.getPropertyValue('--photo'));
+            if (!m) { return; }
+            var img = new Image();
+            img.onload = function () {
+                try {
+                    var W = 48, H = 27, c = document.createElement('canvas');
+                    c.width = W; c.height = H;
+                    var ctx = c.getContext('2d', { willReadFrequently: true });
+                    ctx.drawImage(img, 0, 0, W, H);
+                    var d = ctx.getImageData(0, 0, W, H).data;
+                    var bins = [], sx = [], sy = [], i, lum = 0, weight = 0, n = W * H;
+                    for (i = 0; i < 12; i++) { bins.push(0); sx.push(0); sy.push(0); }
+                    for (i = 0; i < d.length; i += 4) {
+                        var r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
+                        var mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, delta = mx - mn;
+                        lum += 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                        if (delta < 0.04) { continue; }                       // gris : pas de teinte
+                        var h = mx === r ? ((g - b) / delta) % 6 : (mx === g ? (b - r) / delta + 2 : (r - g) / delta + 4);
+                        h = ((h * 60) + 360) % 360;
+                        var w = (delta / (1 - Math.abs(2 * l - 1) + 0.001)) * (1 - Math.abs(2 * l - 1));  // couleurs vives d'abord
+                        var k = Math.floor(h / 30) % 12, rad = h * Math.PI / 180;
+                        bins[k] += w; sx[k] += w * Math.cos(rad); sy[k] += w * Math.sin(rad); weight += w;
+                    }
+                    var best = 0;
+                    for (i = 1; i < 12; i++) { if (bins[i] > bins[best]) { best = i; } }
+                    var lumAvg = lum / n;                                      // 0 = sombre, 1 = clair
+                    var hue = 245;                                             // indigo si la photo est presque grise
+                    if (weight > n * 0.02) {
+                        hue = Math.round(((Math.atan2(sy[best], sx[best]) * 180 / Math.PI) + 360) % 360);
+                    }
+                    // Plus la photo est claire, plus le voile est dense pour garder le texte lisible
+                    var a1 = Math.min(0.88, Math.max(0.68, 0.6 + 0.35 * lumAvg));
+                    var a2 = Math.min(0.5, Math.max(0.26, 0.2 + 0.3 * lumAvg));
+                    var st = section.style;
+                    st.setProperty('--h', String(hue));
+                    st.setProperty('--a1', a1.toFixed(2));
+                    st.setProperty('--a2', a2.toFixed(2));
+                    st.setProperty('--accent', 'hsl(' + hue + ' 95% 82%)');
+                    st.setProperty('--ink', 'hsl(' + hue + ' 70% 97%)');
+                    st.setProperty('--btn-fg', 'hsl(' + hue + ' 65% 24%)');
+                } catch (e) { /* lecture impossible : on garde l'indigo d'origine */ }
+            };
+            img.src = m[1];
+        }
+        document.querySelectorAll('.has-photo').forEach(tuneToPhoto);
 
         // ----- Formulaire -----
         var toggle = document.getElementById('pw-toggle');
