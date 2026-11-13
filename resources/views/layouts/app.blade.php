@@ -595,9 +595,19 @@
         }
         @media (max-width: 900px) {
             .auth-shell { grid-template-columns: 1fr; }
-            .auth-aside { display: none; }
-            .auth-mobile-brand { display: flex; }
-            .auth-main { min-height: 100vh; align-items: center; }
+            /* Le panneau de présentation reste visible : il passe au-dessus du formulaire */
+            .auth-aside { padding: 28px 22px 32px; gap: 20px; justify-content: flex-start; }
+            .auth-hero h2 { font-size: 1.6rem; margin-bottom: 10px; }
+            .auth-hero > p { font-size: 0.95rem; }
+            .auth-hero { max-width: none; }
+            .auth-features { margin-top: 18px; gap: 10px; grid-template-columns: 1fr 1fr; }
+            .auth-features li { flex-direction: column; gap: 10px; padding: 12px; border-radius: 14px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.18); backdrop-filter: blur(6px); }
+            .auth-features .fi { width: 34px; height: 34px; }
+            .auth-features strong { font-size: 0.92rem; line-height: 1.25; }
+            .auth-features span { font-size: 0.8rem; line-height: 1.35; }
+            .auth-foot { display: none; }
+            .auth-mobile-brand { display: none; }
+            .auth-main { align-items: flex-start; }
         }
         @media (max-width: 768px) {
             .menu-toggle { display: inline-flex; }
@@ -623,7 +633,10 @@
             .inline-form-grid { grid-template-columns: 1fr 1fr; }
             .toast-stack { top: 64px; right: 16px; }
             .bar-row { grid-template-columns: 90px 1fr 30px; }
-            .auth-main { padding: 24px 18px; align-items: flex-start; }
+            .auth-main { padding: 28px 18px 40px; align-items: flex-start; }
+            .auth-features li > div > span { display: none; }
+            .auth-aside { padding: 24px 18px 26px; gap: 16px; }
+            .auth-hero h2 { font-size: 1.45rem; }
 
             /* Les tableaux deviennent des cartes empilées */
             .table-wrapper { overflow-x: visible; }
