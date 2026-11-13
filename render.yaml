@@ -12,3 +12,5 @@ services:
         generateValue: true
       - key: SEED_DEMO
         value: "true"
+      - key: SHOW_DEMO_ACCOUNTS
+        value: "true"
