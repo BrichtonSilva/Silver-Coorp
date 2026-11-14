@@ -4,12 +4,12 @@
 
 @section('content')
 @php
-    // Si le formulaire revient avec une erreur (ou un identifiant déjà saisi), on ouvre directement le 3e panneau.
-    $startSlide = ($errors->any() || session('error') || old('login')) ? 2 : 0;
+    // Si le formulaire revient avec une erreur (ou un identifiant déjà saisi), on ouvre directement le 4e panneau (formulaire).
+    $startSlide = ($errors->any() || session('error') || old('login')) ? 3 : 0;
 @endphp
 
 <style>
-    /* ===== Connexion en 3 panneaux qui défilent de gauche à droite ===== */
+    /* ===== Connexion en 4 panneaux qui défilent de gauche à droite ===== */
     .slides { position: relative; height: 100vh; height: 100dvh; overflow: hidden; background: var(--color-bg); }
     .slides-track {
         display: flex; height: 100%;
@@ -70,15 +70,32 @@
     .sl-title { font-size: clamp(1.4rem, 3.4vw, 2rem); line-height: 1.2; letter-spacing: -0.5px; text-align: center; max-width: 560px; }
     .slides .auth-features li > div > span { display: block; }
 
-    /* Cartes d'exemple (toujours visibles dans ce panneau) */
-    .sl-cards { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; width: 100%; }
-    .sl-cards .float-card:nth-child(3) { animation-delay: -1.5s; }
+    /* Panneau 3 : cartes d'exemple */
+    .sl-sub { text-align: center; max-width: 560px; opacity: 0.9; margin-top: -14px; }
+    .ex-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; width: 100%; max-width: 780px; }
+    .ex-card {
+        background: rgba(255,255,255,0.96); color: #0f172a; text-align: left;
+        border-radius: 16px; padding: 18px; box-shadow: 0 18px 40px rgba(0,0,0,0.38);
+        display: flex; flex-direction: column; gap: 8px;
+        animation: bob 6s ease-in-out infinite; animation-delay: calc(var(--d, 0s) * -20);
+    }
+    .ex-card header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .ex-card header strong { flex: 1; min-width: 0; font-size: 0.98rem; line-height: 1.25; }
+    .ex-card .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .ex-badge { flex-shrink: 0; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 650; }
+    .ex-badge.ok { background: #dcfce7; color: #166534; }
+    .ex-badge.draft { background: #fef3c7; color: #92400e; }
+    .ex-meta { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #475569; }
+    .ex-meta .icon, .ex-note .icon { width: 15px; height: 15px; flex-shrink: 0; color: #6366f1; }
+    .ex-progress { height: 7px; border-radius: 999px; background: #e2e8f0; overflow: hidden; margin-top: 6px; }
+    .ex-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+    .ex-note { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #64748b; }
 
     /* Indicateur de position : fine barre en 3 segments, en haut (ne cache jamais le contenu) */
     .slides-dots {
         position: absolute; top: 12px; left: 0; right: 0; z-index: 5;
         width: calc(100% - 32px); max-width: 520px; margin-inline: auto;
-        display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
     }
     .slides-dot {
         position: relative; height: 4px; padding: 0; border: 0; border-radius: 999px;
@@ -89,10 +106,10 @@
     .slides-dot:hover { background: rgba(255,255,255,0.6); }
     .slides-dot[aria-current="true"] { background: #fff; }
     .slides-dot:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
-    .slides[data-active="2"] .slides-dot { background: var(--color-border); }
-    .slides[data-active="2"] .slides-dot:hover { background: var(--color-text-light); }
-    .slides[data-active="2"] .slides-dot[aria-current="true"] { background: var(--color-primary); }
-    .slides[data-active="2"] .slides-dot:focus-visible { outline-color: var(--color-primary); }
+    .slides[data-active="3"] .slides-dot { background: var(--color-border); }
+    .slides[data-active="3"] .slides-dot:hover { background: var(--color-text-light); }
+    .slides[data-active="3"] .slides-dot[aria-current="true"] { background: var(--color-primary); }
+    .slides[data-active="3"] .slides-dot:focus-visible { outline-color: var(--color-primary); }
 
     /* Le mot qui change reste collé à la virgule (pas de saut de ligne avant « , ») */
     .nb { white-space: nowrap; }
@@ -150,9 +167,16 @@
         .slides .auth-features { grid-template-columns: 1fr; gap: 8px; }
         .slides .auth-features li { flex-direction: row; align-items: center; gap: 12px; padding: 10px 12px; }
         .slides .auth-features li > div > span { font-size: 0.78rem; }
-        .sl-cards { gap: 10px; }
-        .sl-cards .float-card { min-width: 0; width: 100%; padding: 9px 14px; animation: none; }
-        .sl-cards .float-card:nth-child(3) { display: none; }
+        .ex-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+        .ex-card { padding: 12px; gap: 6px; animation: none; }
+        .ex-card header { flex-wrap: wrap; gap: 6px 8px; margin-bottom: 2px; }
+        .ex-card header strong { flex: 1 1 calc(100% - 20px); font-size: 0.9rem; }
+        .ex-badge { order: 3; font-size: 0.68rem; padding: 2px 8px; }
+        .ex-meta { font-size: 0.78rem; gap: 6px; }
+        .ex-meta .icon, .ex-note .icon { width: 13px; height: 13px; }
+        .ex-progress { height: 6px; margin-top: 4px; }
+        .ex-note { font-size: 0.72rem; gap: 6px; align-items: flex-start; }
+        .sl-sub { margin-top: -8px; font-size: 0.92rem; }
         .sl-body { gap: 18px; }
         .sl-title { font-size: 1.35rem; }
         .sl-btn { padding: 12px 20px; }
@@ -167,7 +191,7 @@
     <div class="slides-track" id="slides-track">
 
         {{-- Panneau 1 : logo Eventia et slogan --}}
-        <section class="slide auth-aside has-photo" id="slide-accueil" aria-label="Accueil, 1 sur 3" style="--photo: url('{{ asset('images/login/accueil.jpg') }}');">
+        <section class="slide auth-aside has-photo" id="slide-accueil" aria-label="Accueil, 1 sur 4" style="--photo: url('{{ asset('images/login/accueil.jpg') }}');">
             <span class="auth-orb o1" aria-hidden="true"></span>
             <span class="auth-orb o2" aria-hidden="true"></span>
             <span class="auth-orb o3" aria-hidden="true"></span>
@@ -189,13 +213,13 @@
                         Découvrir Eventia
                         <svg class="icon nudge" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                     </button>
-                    <button type="button" class="sl-btn sl-btn-ghost" data-go="2">Aller à la connexion</button>
+                    <button type="button" class="sl-btn sl-btn-ghost" data-go="3">Aller à la connexion</button>
                 </div>
             </div>
         </section>
 
-        {{-- Panneau 2 : points forts et cartes d'exemple --}}
-        <section class="slide auth-aside has-photo" id="slide-atouts" aria-label="Points forts, 2 sur 3" style="--photo: url('{{ asset('images/login/atouts.jpg') }}');">
+        {{-- Panneau 2 : points forts --}}
+        <section class="slide auth-aside has-photo" id="slide-atouts" aria-label="Points forts, 2 sur 4" style="--photo: url('{{ asset('images/login/atouts.jpg') }}');">
             <span class="auth-orb o1" aria-hidden="true"></span>
             <span class="auth-orb o2" aria-hidden="true"></span>
 
@@ -226,18 +250,86 @@
                     </li>
                 </ul>
 
-                <div class="sl-cards" aria-hidden="true">
-                    <div class="float-card"><span class="dot" style="background:#ec4899;"></span><div><strong>Mariage Bernard</strong><small>26 nov. · Salle des fêtes</small></div></div>
-                    <div class="float-card"><span class="dot" style="background:#22c55e;"></span><div><strong>Séminaire Tech Solutions</strong><small>12 déc. · Confirmé</small></div></div>
-                    <div class="float-card"><span class="dot" style="background:#f59e0b;"></span><div><strong>Concert de fin d'année</strong><small>18 déc. · Brouillon</small></div></div>
-                </div>
-
                 <div class="sl-actions">
                     <button type="button" class="sl-btn sl-btn-ghost" data-go="0">
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
                         Retour
                     </button>
                     <button type="button" class="sl-btn" data-go="2">
+                        Voir des exemples
+                        <svg class="icon nudge" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        {{-- Panneau 3 : cartes d'exemple --}}
+        <section class="slide auth-aside has-photo" id="slide-exemples" aria-label="Exemples, 3 sur 4" style="--photo: url('{{ asset('images/login/exemples.jpg') }}');">
+            <span class="auth-orb o1" aria-hidden="true"></span>
+            <span class="auth-orb o3" aria-hidden="true"></span>
+
+            <div class="sl-brand" aria-hidden="true">
+                <span class="sl-brand-mark"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+                <span>Eventia</span>
+            </div>
+
+            <div class="sl-body">
+                <h2 class="sl-title">Vos événements, d'un coup d'œil</h2>
+                <p class="sl-sub">Statut, lieu, date et avancement de la checklist : tout est suivi pour vous.</p>
+
+                <div class="ex-grid" aria-hidden="true">
+                    <article class="ex-card" style="--d:.05s">
+                        <header>
+                            <span class="dot" style="background:#ec4899;"></span>
+                            <strong>WPoint Tour Tiakola</strong>
+                            <span class="ex-badge ok">Confirmé</span>
+                        </header>
+                        <p class="ex-meta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Décembre 2026</p>
+                        <p class="ex-meta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>Tournée</p>
+                        <div class="ex-progress" role="img" aria-label="Checklist à 80 %"><span style="width:80%"></span></div>
+                        <p class="ex-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>8 tâches sur 10 terminées</p>
+                    </article>
+                    <article class="ex-card" style="--d:.15s">
+                        <header>
+                            <span class="dot" style="background:#8b5cf6;"></span>
+                            <strong>Festichill 2027</strong>
+                            <span class="ex-badge ok">Confirmé</span>
+                        </header>
+                        <p class="ex-meta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>2027</p>
+                        <p class="ex-meta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>Majestic Cinéma</p>
+                        <div class="ex-progress" role="img" aria-label="Checklist à 55 %"><span style="width:55%"></span></div>
+                        <p class="ex-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>6 tâches sur 11 terminées</p>
+                    </article>
+                    <article class="ex-card" style="--d:.25s">
+                        <header>
+                            <span class="dot" style="background:#22c55e;"></span>
+                            <strong>Chill and Groove 2027</strong>
+                            <span class="ex-badge ok">Confirmé</span>
+                        </header>
+                        <p class="ex-meta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>2027</p>
+                        <p class="ex-meta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>Palais des Congrès</p>
+                        <div class="ex-progress" role="img" aria-label="Checklist à 35 %"><span style="width:35%"></span></div>
+                        <p class="ex-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>4 tâches sur 11 terminées</p>
+                    </article>
+                    <article class="ex-card" style="--d:.35s">
+                        <header>
+                            <span class="dot" style="background:#f59e0b;"></span>
+                            <strong>Yardland 2027</strong>
+                            <span class="ex-badge draft">Brouillon</span>
+                        </header>
+                        <p class="ex-meta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>2027</p>
+                        <p class="ex-meta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>Stade de France</p>
+                        <div class="ex-progress" role="img" aria-label="Checklist à 15 %"><span style="width:15%"></span></div>
+                        <p class="ex-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>2 tâches sur 13 terminées</p>
+                    </article>
+                </div>
+
+                <div class="sl-actions">
+                    <button type="button" class="sl-btn sl-btn-ghost" data-go="1">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                        Retour
+                    </button>
+                    <button type="button" class="sl-btn" data-go="3">
                         Se connecter
                         <svg class="icon nudge" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                     </button>
@@ -245,10 +337,10 @@
             </div>
         </section>
 
-        {{-- Panneau 3 : formulaire --}}
-        <section class="slide auth-main" id="slide-connexion" aria-label="Connexion, 3 sur 3">
+        {{-- Panneau 4 : formulaire --}}
+        <section class="slide auth-main" id="slide-connexion" aria-label="Connexion, 4 sur 4">
             <div class="auth-card">
-                <button type="button" class="sl-back" data-go="1">
+                <button type="button" class="sl-back" data-go="2">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
                     Retour
                 </button>
@@ -325,7 +417,8 @@
     <div class="slides-dots" role="group" aria-label="Aller à un panneau">
         <button type="button" class="slides-dot" data-go="0" aria-label="Accueil"></button>
         <button type="button" class="slides-dot" data-go="1" aria-label="Points forts"></button>
-        <button type="button" class="slides-dot" data-go="2" aria-label="Connexion"></button>
+        <button type="button" class="slides-dot" data-go="2" aria-label="Exemples"></button>
+        <button type="button" class="slides-dot" data-go="3" aria-label="Connexion"></button>
     </div>
 </div>
 
@@ -363,7 +456,7 @@
             setActive(i);
             track.scrollTo({ left: i * track.clientWidth, behavior: (instant || reduce) ? 'instant' : 'smooth' });
             // Sur ordinateur, on place le curseur dans le formulaire ; sur téléphone on évite d'ouvrir le clavier.
-            if (i === 2 && !instant && finePointer) { setTimeout(focusForm, reduce ? 0 : 450); }
+            if (i === 3 && !instant && finePointer) { setTimeout(focusForm, reduce ? 0 : 450); }
         }
 
         document.querySelectorAll('[data-go]').forEach(function (el) {
@@ -393,13 +486,13 @@
             track.scrollTo({ left: current * track.clientWidth, behavior: 'instant' });
         });
 
-        // Panneau de départ : le formulaire s'il y a une erreur, sinon l'accueil
+        // Panneau de départ : le formulaire (4e) s'il y a une erreur, sinon l'accueil
         var start = parseInt(root.getAttribute('data-start') || '0', 10);
-        if (window.location.hash === '#connexion') { start = 2; }
+        if (window.location.hash === '#connexion') { start = 3; }
         setActive(start);
         if (start > 0) {
             track.scrollTo({ left: start * track.clientWidth, behavior: 'instant' });
-            if (start === 2 && finePointer) { focusForm(); }
+            if (start === 3 && finePointer) { focusForm(); }
         }
 
         // ----- Couleurs accordées aux photos -----
