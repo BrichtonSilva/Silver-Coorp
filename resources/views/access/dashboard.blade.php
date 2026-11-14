@@ -144,7 +144,7 @@ $maxStatus = max(1, count($countsByStatus) ? max($countsByStatus) : 1);
 <div class="card">
     <div class="card-header">
         <h3>Alertes en cours</h3>
-        <span class="badge badge-danger">{{ count($alerts) }}</span>
+        <x-badge variant="danger">{{ count($alerts) }}</x-badge>
     </div>
     <div class="card-body">
         @foreach($alerts as $alert)
@@ -244,13 +244,7 @@ $maxStatus = max(1, count($countsByStatus) ? max($countsByStatus) : 1);
                         <td>{{ Event::TYPE_LABELS[$evt->type] ?? $evt->type }}</td>
                         <td>{{ $evt->venue->name ?? '—' }}</td>
                         <td>
-                            @if($evt->status === Event::STATUS_BROUILLON)
-                                <span class="badge badge-neutral">Brouillon</span>
-                            @elseif($evt->status === Event::STATUS_CONFIRME)
-                                <span class="badge badge-info">Confirmé</span>
-                            @elseif($evt->status === Event::STATUS_TERMINE)
-                                <span class="badge badge-success">Terminé</span>
-                            @endif
+                            <x-event-status-badge :status="$evt->status" />
                         </td>
                     </tr>
                     @endforeach

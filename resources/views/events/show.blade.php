@@ -25,19 +25,7 @@
                 <div class="form-group">
                     <label class="detail-label">Type</label>
                     <p>
-                        @php
-                            $typeColors = [
-                                'mariage' => 'badge-pink',
-                                'séminaire' => 'badge-info',
-                                'conférence' => 'badge-indigo',
-                                'concert' => 'badge-warning',
-                                'autre' => 'badge-neutral',
-                            ];
-                            $tc = $typeColors[$event->type] ?? $typeColors['autre'];
-                        @endphp
-                        <span class="badge {{ $tc }}">
-                            {{ App\Models\Event::TYPE_LABELS[$event->type] ?? $event->type }}
-                        </span>
+                        <x-event-type-badge :type="$event->type" />
                     </p>
                 </div>
 
@@ -86,15 +74,7 @@
             <div class="form-group">
                 <label class="detail-label">Statut</label>
                 <p>
-                    @if($event->status === App\Models\Event::STATUS_BROUILLON)
-                        <span class="badge badge-neutral">Brouillon</span>
-                    @elseif($event->status === App\Models\Event::STATUS_CONFIRME)
-                        <span class="badge badge-info">Confirmé</span>
-                    @elseif($event->status === App\Models\Event::STATUS_TERMINE)
-                        <span class="badge badge-success">Terminé</span>
-                    @elseif($event->status === App\Models\Event::STATUS_ANNULE)
-                        <span class="badge badge-danger">Annulé</span>
-                    @endif
+                    <x-event-status-badge :status="$event->status" />
                 </p>
             </div>
 
@@ -241,24 +221,11 @@
                     <tr>
                         <td>{{ $assignment->provider->name }}</td>
                         <td>
-                            <span class="badge badge-indigo">
-                                {{ App\Models\Provider::CATEGORY_LABELS[$assignment->provider->category] ?? $assignment->provider->category }}
-                            </span>
+                            <x-badge variant="indigo">{{ App\Models\Provider::CATEGORY_LABELS[$assignment->provider->category] ?? $assignment->provider->category }}</x-badge>
                         </td>
                         <td>{{ number_format($assignment->cost, 2, ',', ' ') }} €</td>
                         <td>
-                            @php
-                                $statusColors = [
-                                    'a_contacter' => 'badge-warning',
-                                    'contacte' => 'badge-info',
-                                    'confirme' => 'badge-success',
-                                    'annule' => 'badge-danger',
-                                ];
-                                $sc = $statusColors[$assignment->status] ?? 'badge-neutral';
-                            @endphp
-                            <span class="badge {{ $sc }}">
-                                {{ $assignment->statusLabel() }}
-                            </span>
+                            <x-assignment-status-badge :status="$assignment->status" :label="$assignment->statusLabel()" />
                         </td>
                         @if(auth()->user()->canWrite() && !$event->isTerminated() && !$event->isCancelled())
                         <td>
@@ -300,9 +267,7 @@
         <h3>Checklist de préparation</h3>
         @php $progress = $event->checklistProgress(); @endphp
         <div style="display:flex;align-items:center;gap:12px;">
-            <span class="badge {{ $progress === 100 ? 'badge-success' : 'badge-info' }}">
-                {{ $progress }} %
-            </span>
+            <x-badge :variant="$progress === 100 ? 'success' : 'info'">{{ $progress }} %</x-badge>
             @if(auth()->user()->canWrite() && !$event->isTerminated() && !$event->isCancelled())
             <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('add-task-form').style.display='block';this.style.display='none';">+ Ajouter une tâche</button>
             @endif
@@ -366,11 +331,11 @@
                         <td>{{ $task->due_date?->format('d/m/Y') ?? '—' }}</td>
                         <td>
                             @if($task->is_done)
-                                <span class="badge badge-success">Faite</span>
+                                <x-badge variant="success">Faite</x-badge>
                             @elseif($task->isOverdue())
-                                <span class="badge badge-danger">En retard</span>
+                                <x-badge variant="danger">En retard</x-badge>
                             @else
-                                <span class="badge badge-warning">À faire</span>
+                                <x-badge variant="warning">À faire</x-badge>
                             @endif
                         </td>
                         @if(auth()->user()->canWrite() && !$event->isTerminated() && !$event->isCancelled())
@@ -419,7 +384,7 @@
                     <tr>
                         <td>{{ $entry->created_at->format('d/m/Y H:i') }}</td>
                         <td>
-                            <span class="badge badge-indigo">{{ $entry->actionLabel() }}</span>
+                            <x-badge variant="indigo">{{ $entry->actionLabel() }}</x-badge>
                         </td>
                         <td>{{ $entry->user?->name ?? 'Système' }}</td>
                         <td>{{ $entry->details ?? '—' }}</td>

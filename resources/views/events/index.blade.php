@@ -92,34 +92,14 @@
                             </a>
                         </td>
                         <td>
-                            @php
-                                $typeColors = [
-                                    'mariage' => 'badge-pink',
-                                    'séminaire' => 'badge-info',
-                                    'conférence' => 'badge-indigo',
-                                    'concert' => 'badge-warning',
-                                    'autre' => 'badge-neutral',
-                                ];
-                                $tc = $typeColors[$event->type] ?? $typeColors['autre'];
-                            @endphp
-                            <span class="badge {{ $tc }}">
-                                {{ App\Models\Event::TYPE_LABELS[$event->type] ?? $event->type }}
-                            </span>
+                            <x-event-type-badge :type="$event->type" />
                         </td>
                         <td>{{ $event->date->format('d/m/Y') }}</td>
                         <td>{{ \Illuminate\Support\Carbon::parse($event->start_time)->format('H:i') }} – {{ \Illuminate\Support\Carbon::parse($event->end_time)->format('H:i') }}</td>
                         <td>{{ $event->venue?->name ?? '—' }}</td>
                         <td>{{ $event->guest_count }}</td>
                         <td>
-                            @if($event->status === App\Models\Event::STATUS_BROUILLON)
-                                <span class="badge badge-neutral">Brouillon</span>
-                            @elseif($event->status === App\Models\Event::STATUS_CONFIRME)
-                                <span class="badge badge-info">Confirmé</span>
-                            @elseif($event->status === App\Models\Event::STATUS_TERMINE)
-                                <span class="badge badge-success">Terminé</span>
-                            @elseif($event->status === App\Models\Event::STATUS_ANNULE)
-                                <span class="badge badge-danger">Annulé</span>
-                            @endif
+                            <x-event-status-badge :status="$event->status" />
                         </td>
                         <td>
                             <div class="actions">
