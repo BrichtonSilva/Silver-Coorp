@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Access\AccountController;
 use App\Http\Controllers\Access\AuthController;
 use App\Http\Controllers\Access\UserController;
 use App\Http\Controllers\Clients\ClientController;
@@ -119,6 +120,12 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::patch('/events/{event}/tasks/{task}/toggle', [TaskController::class, 'toggle'])->name('events.tasks.toggle');
         Route::delete('/events/{event}/tasks/{task}', [TaskController::class, 'destroy'])->name('events.tasks.destroy');
     });
+
+    // M1 — Mon compte (tous les rôles) : profil et changement de mot de passe
+    Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
+    Route::put('/account/password', [AccountController::class, 'updatePassword'])
+        ->middleware('throttle:6,1')
+        ->name('account.password');
 
     // M1 — User management (admin only)
     Route::middleware('permission:administrateur')->group(function () {

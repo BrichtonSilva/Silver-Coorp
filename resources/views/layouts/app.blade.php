@@ -195,7 +195,11 @@
         }
         .sidebar-nav a:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
         .sidebar-footer { padding: 14px 16px; border-top: 1px solid var(--color-border); }
-        .user-chip { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .user-chip { display: flex; align-items: center; gap: 10px; margin: 0 -8px 12px; padding: 8px; border-radius: var(--radius); color: inherit; text-decoration: none; transition: background 0.15s ease; }
+        .user-chip:hover, .user-chip.active { background: var(--color-surface-2); }
+        .user-chip:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+        .user-chip .user-text { flex: 1; min-width: 0; }
+        .user-chip-arrow { width: 16px; height: 16px; color: var(--color-text-muted); flex-shrink: 0; }
         .avatar {
             width: 38px; height: 38px; border-radius: 50%;
             display: grid; place-items: center;
@@ -757,13 +761,14 @@
                 @endif
             </nav>
             <div class="sidebar-footer">
-                <div class="user-chip">
+                <a href="{{ route('account.edit') }}" class="user-chip {{ request()->routeIs('account.*') ? 'active' : '' }}" title="Mon compte" aria-label="Mon compte : {{ auth()->user()->name }}" aria-current="{{ request()->routeIs('account.*') ? 'page' : 'false' }}">
                     <div class="avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</div>
-                    <div>
+                    <div class="user-text">
                         <div class="user-name">{{ auth()->user()->name }}</div>
                         <div class="user-role">{{ App\Models\User::ROLE_LABELS[auth()->user()->role] ?? auth()->user()->role }}</div>
                     </div>
-                </div>
+                    <svg class="icon user-chip-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 18l6-6-6-6"/></svg>
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="btn btn-secondary btn-sm"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg> Se déconnecter</button>
