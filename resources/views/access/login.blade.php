@@ -74,22 +74,24 @@
     .sl-sub { text-align: center; max-width: 560px; opacity: 0.9; margin-top: -14px; }
     .ex-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; width: 100%; max-width: 780px; }
     .ex-card {
-        background: rgba(255,255,255,0.96); color: #0f172a; text-align: left;
-        border-radius: 16px; padding: 18px; box-shadow: 0 18px 40px rgba(0,0,0,0.38);
+        background: hsl(var(--h, 245) 45% 14% / 0.55); color: var(--ink, #fff); text-align: left;
+        border: 1px solid rgba(255,255,255,0.22); border-radius: 16px; padding: 18px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         display: flex; flex-direction: column; gap: 8px;
         animation: bob 6s ease-in-out infinite; animation-delay: calc(var(--d, 0s) * -20);
     }
     .ex-card header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
     .ex-card header strong { flex: 1; min-width: 0; font-size: 0.98rem; line-height: 1.25; }
-    .ex-card .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .ex-badge { flex-shrink: 0; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 650; }
-    .ex-badge.ok { background: #dcfce7; color: #166534; }
-    .ex-badge.draft { background: #fef3c7; color: #92400e; }
-    .ex-meta { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #475569; }
-    .ex-meta .icon, .ex-note .icon { width: 15px; height: 15px; flex-shrink: 0; color: #6366f1; }
-    .ex-progress { height: 7px; border-radius: 999px; background: #e2e8f0; overflow: hidden; margin-top: 6px; }
-    .ex-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6366f1, #8b5cf6); }
-    .ex-note { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #64748b; }
+    .ex-card .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--accent, #fde68a); box-shadow: 0 0 10px var(--accent, #fde68a); }
+    .ex-badge { flex-shrink: 0; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 650; border: 1px solid transparent; }
+    .ex-badge.ok { background: hsl(var(--h, 245) 90% 80% / 0.2); color: var(--accent, #fde68a); border-color: hsl(var(--h, 245) 90% 80% / 0.35); }
+    .ex-badge.draft { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.3); }
+    .ex-meta { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: rgba(255,255,255,0.82); }
+    .ex-meta .icon, .ex-note .icon { width: 15px; height: 15px; flex-shrink: 0; color: var(--accent, #fde68a); }
+    .ex-progress { height: 7px; border-radius: 999px; background: rgba(255,255,255,0.18); overflow: hidden; margin-top: 6px; }
+    .ex-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent, #fde68a), hsl(var(--h, 245) 95% 92%)); }
+    .ex-note { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: rgba(255,255,255,0.7); }
 
     /* Indicateur de position : fine barre en 3 segments, en haut (ne cache jamais le contenu) */
     .slides-dots {
@@ -280,7 +282,7 @@
                 <div class="ex-grid" aria-hidden="true">
                     <article class="ex-card" style="--d:.05s">
                         <header>
-                            <span class="dot" style="background:#ec4899;"></span>
+                            <span class="dot"></span>
                             <strong>WPoint Tour Tiakola</strong>
                             <span class="ex-badge ok">Confirmé</span>
                         </header>
@@ -291,7 +293,7 @@
                     </article>
                     <article class="ex-card" style="--d:.15s">
                         <header>
-                            <span class="dot" style="background:#8b5cf6;"></span>
+                            <span class="dot"></span>
                             <strong>Festichill 2027</strong>
                             <span class="ex-badge ok">Confirmé</span>
                         </header>
@@ -302,7 +304,7 @@
                     </article>
                     <article class="ex-card" style="--d:.25s">
                         <header>
-                            <span class="dot" style="background:#22c55e;"></span>
+                            <span class="dot"></span>
                             <strong>Chill and Groove 2027</strong>
                             <span class="ex-badge ok">Confirmé</span>
                         </header>
@@ -313,7 +315,7 @@
                     </article>
                     <article class="ex-card" style="--d:.35s">
                         <header>
-                            <span class="dot" style="background:#f59e0b;"></span>
+                            <span class="dot"></span>
                             <strong>Yardland 2027</strong>
                             <span class="ex-badge draft">Brouillon</span>
                         </header>
