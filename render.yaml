@@ -10,6 +10,8 @@ services:
     envVars:
       - key: APP_KEY
         generateValue: true
+      - key: APP_TIMEZONE
+        value: "Africa/Porto-Novo"   # heure du Bénin (UTC+1)
       - key: SEED_DEMO
         value: "true"
       - key: SHOW_DEMO_ACCOUNTS

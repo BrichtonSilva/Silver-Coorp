@@ -449,6 +449,78 @@ class EventManagementTest extends TestCase
         ]);
     }
 
+    public function test_rg6_event_today_stays_confirmed_until_its_end_time(): void
+    {
+        $this->travelTo('2026-11-14 15:00:00');
+        $charge = User::factory()->charge()->create();
+        $event = Event::factory()->confirme()->create([
+            'charged_user_id' => $charge->id,
+            'date' => '2026-11-14',
+            'start_time' => '12:00:00',
+            'end_time' => '18:00:00',
+        ]);
+
+        $this->actingAs($charge)->get('/events');
+
+        $this->assertSame(Event::STATUS_CONFIRME, $event->fresh()->status);
+    }
+
+    public function test_rg6_event_today_terminates_once_its_end_time_has_passed(): void
+    {
+        $this->travelTo('2026-11-14 18:30:00');
+        $charge = User::factory()->charge()->create();
+        $event = Event::factory()->confirme()->create([
+            'charged_user_id' => $charge->id,
+            'date' => '2026-11-14',
+            'start_time' => '12:00:00',
+            'end_time' => '18:00:00',
+        ]);
+
+        $this->actingAs($charge)->get('/events');
+
+        $this->assertSame(Event::STATUS_TERMINE, $event->fresh()->status);
+    }
+
+    public function test_rg6_event_ending_exactly_now_is_not_terminated_yet(): void
+    {
+        $this->travelTo('2026-11-14 18:00:00');
+        $charge = User::factory()->charge()->create();
+        $event = Event::factory()->confirme()->create([
+            'charged_user_id' => $charge->id,
+            'date' => '2026-11-14',
+            'start_time' => '12:00:00',
+            'end_time' => '18:00:00',
+        ]);
+
+        $this->actingAs($charge)->get('/events');
+
+        $this->assertSame(Event::STATUS_CONFIRME, $event->fresh()->status);
+    }
+
+    public function test_rg6_future_draft_and_cancelled_events_are_never_auto_terminated(): void
+    {
+        $this->travelTo('2026-11-14 23:00:00');
+        $charge = User::factory()->charge()->create();
+        $future = Event::factory()->confirme()->create([
+            'charged_user_id' => $charge->id,
+            'date' => '2026-11-15',
+        ]);
+        $draft = Event::factory()->brouillon()->create([
+            'charged_user_id' => $charge->id,
+            'date' => '2026-11-13',
+        ]);
+        $cancelled = Event::factory()->annule()->create([
+            'charged_user_id' => $charge->id,
+            'date' => '2026-11-13',
+        ]);
+
+        $this->actingAs($charge)->get('/events');
+
+        $this->assertSame(Event::STATUS_CONFIRME, $future->fresh()->status);
+        $this->assertSame(Event::STATUS_BROUILLON, $draft->fresh()->status);
+        $this->assertSame(Event::STATUS_ANNULE, $cancelled->fresh()->status);
+    }
+
     public function test_rg8_cancel_requires_reason(): void
     {
         $charge = User::factory()->charge()->create();

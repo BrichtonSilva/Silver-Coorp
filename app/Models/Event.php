@@ -222,12 +222,23 @@ class Event extends Model
     }
 
     /**
-     * Auto-terminate events whose date has passed.
+     * Auto-terminate confirmed events once their date AND end time have passed:
+     * - the event date is before today, or
+     * - the event is today and its end time is already behind us.
+     * (The form guarantees end_time > start_time, so an event never ends after midnight.)
      */
     public static function autoTerminate(): int
     {
+        $now = now();
+
         return static::where('status', self::STATUS_CONFIRME)
-            ->where('date', '<', now()->toDateString())
+            ->where(function ($query) use ($now) {
+                $query->where('date', '<', $now->toDateString())
+                    ->orWhere(function ($today) use ($now) {
+                        $today->whereDate('date', $now->toDateString())
+                            ->whereTime('end_time', '<', $now->format('H:i:s'));
+                    });
+            })
             ->update(['status' => self::STATUS_TERMINE]);
     }
 }
